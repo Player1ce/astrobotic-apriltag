@@ -159,25 +159,25 @@ public:
   Demo() :
     // default settings, most can be modified through command line options (see below)
     m_tagDetector(NULL),
-    m_tagCodes(AprilTags::tagCodes36h11),
+    m_tagCodes(AprilTags::tagCodes25h7),
 
     m_draw(true),
     m_arduino(false),
     m_timing(false),
 
-    m_width(640),
-    m_height(480),
-    m_tagSize(0.166),
-    m_fx(600),
-    m_fy(600),
-    m_px(m_width/2),
-    m_py(m_height/2),
+    m_width(800),
+    m_height(600),
+    m_tagSize(0.16),
+    m_fx(412.977),
+    m_fy(413.5705),
+    m_px(932.4678),
+    m_py(537.2644),
 
     m_exposure(-1),
     m_gain(-1),
     m_brightness(-1),
 
-    m_deviceId(0)
+    m_deviceId(2)
   {}
 
   // changing the tag family
@@ -334,12 +334,12 @@ public:
       cerr << "ERROR: Can't find video device " << m_deviceId << "\n";
       exit(1);
     }
-    m_cap.set(CV_CAP_PROP_FRAME_WIDTH, m_width);
-    m_cap.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
+    m_cap.set(cv::CAP_PROP_FRAME_WIDTH, m_width);
+    m_cap.set(cv::CAP_PROP_FRAME_HEIGHT, m_height);
     cout << "Camera successfully opened (ignore error messages above...)" << endl;
     cout << "Actual resolution: "
-         << m_cap.get(CV_CAP_PROP_FRAME_WIDTH) << "x"
-         << m_cap.get(CV_CAP_PROP_FRAME_HEIGHT) << endl;
+         << m_cap.get(cv::CAP_PROP_FRAME_WIDTH) << "x"
+         << m_cap.get(cv::CAP_PROP_FRAME_HEIGHT) << endl;
 
   }
 
@@ -390,7 +390,7 @@ public:
     //      m_cap.retrieve(image);
 
     // detect April tags (requires a gray scale image)
-    cv::cvtColor(image, image_gray, CV_BGR2GRAY);
+    cv::cvtColor(image, image_gray, cv::COLOR_BGR2GRAY);
     double t0;
     if (m_timing) {
       t0 = tic();
