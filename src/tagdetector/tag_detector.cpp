@@ -35,6 +35,10 @@ astro::sensor_drivers::apriltagdetector::AprilTagDetector::~AprilTagDetector(){
 
 void astro::sensor_drivers::apriltagdetector::AprilTagDetector::setCameraMatrix(cv::Mat& cameraMatrix){
   _cameraMatrix = cameraMatrix;
+  _fx = _cameraMatrix.at<double>(0,0);
+  _fy = _cameraMatrix.at<double>(1,1);
+  _px = _cameraMatrix.at<double>(0,2);
+  _py = _cameraMatrix.at<double>(1,2);
 }
 
 void astro::sensor_drivers::apriltagdetector::AprilTagDetector::setDistortionMatrix(cv::Mat& distortionMatrix){
@@ -71,8 +75,12 @@ void astro::sensor_drivers::apriltagdetector::AprilTagDetector::setTagSize(doubl
   _tagSize = tagSize;
 }
 
-void astro::sensor_drivers::apriltagdetector::AprilTagDetector::setDrawOutput(bool draw){
-  _draw = draw;
+void astro::sensor_drivers::apriltagdetector::AprilTagDetector::enableViewFinder(){
+  _draw = true;
+}
+
+void astro::sensor_drivers::apriltagdetector::AprilTagDetector::disableViewFinder(){
+  _draw = false;
 }
 
 bool astro::sensor_drivers::apriltagdetector::AprilTagDetector::init(){

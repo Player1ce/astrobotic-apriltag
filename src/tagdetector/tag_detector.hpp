@@ -34,7 +34,7 @@ namespace astro::sensor_drivers::apriltagdetector
             AprilTags::TagCodes _tagCode = AprilTags::tagCodes25h9;
             vector<AprilTags::TagDetection> _detections;
 
-            bool _draw = true;
+            bool _draw = false;
 
             int _width = 800;
             int _height = 600;
@@ -46,8 +46,8 @@ namespace astro::sensor_drivers::apriltagdetector
             cv::Mat _distortionMatrix = (cv::Mat1d(1, 5) << 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
             double _fx = _cameraMatrix.at<double>(0,0);
-            double _fy = _cameraMatrix.at<double>(0,2);
-            double _px = _cameraMatrix.at<double>(1,1);
+            double _fy = _cameraMatrix.at<double>(1,1);
+            double _px = _cameraMatrix.at<double>(0,2);
             double _py = _cameraMatrix.at<double>(1,2);
 
             cv::VideoCapture _videoStream;
@@ -74,7 +74,8 @@ namespace astro::sensor_drivers::apriltagdetector
             void setInputDev(int devId);
             void setImgSize(int width, int height);
             void setTagSize(double tagSize);
-            void setDrawOutput(bool draw);
+            void enableViewFinder();
+            void disableViewFinder();
             void setTagCode(std::string s);
             bool init();
             void grab();
