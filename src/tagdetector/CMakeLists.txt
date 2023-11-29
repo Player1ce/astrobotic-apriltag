@@ -1,11 +1,12 @@
-add_executable(
-	TagDetector
+add_library(
+	TagDetector 
 
-	tag_detector.cpp
-)
+	tag_detector.cpp)
 
 target_link_libraries(
 	TagDetector
 	
 	AprilTags
-	${OpenCV_LIBS})
+	${OpenCV_LIBS}
+	${EIGEN3_INCLUDE_DIR}
+	)
