@@ -32,6 +32,7 @@ namespace astro::sensor_drivers::apriltagdetector
         private:
             AprilTags::TagDetector* _tagDetector = NULL;
             AprilTags::TagCodes _tagCode = AprilTags::tagCodes25h9;
+            vector<AprilTags::TagDetection> _detections;
 
             bool _draw = true;
 
@@ -44,15 +45,26 @@ namespace astro::sensor_drivers::apriltagdetector
             cv::Mat _cameraMatrix = (cv::Mat1d(3, 3) << 300, 0, _width/2, 0, 300, _height/2, 0, 0, 1);
             cv::Mat _distortionMatrix = (cv::Mat1d(1, 5) << 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
+            double _fx = _cameraMatrix.at<double>(0,0);
+            double _fy = _cameraMatrix.at<double>(0,2);
+            double _px = _cameraMatrix.at<double>(1,1);
+            double _py = _cameraMatrix.at<double>(1,2);
+
             cv::VideoCapture _videoStream;
             cv::Mat _raw_img;
             cv::Mat _grey_img;
             cv::Mat _undistort_img;
 
-            Eigen::Vector3f _camEuler = Eigen::Vector3f::Zero();
-            Eigen::Vector3f _camPos = Eigen::Vector3f::Zero();
+            Eigen::Vector3d _camEuler = Eigen::Vector3d::Zero();
+            Eigen::Vector3d _camPos = Eigen::Vector3d::Zero();
 
-            int _processImage ();
+            std::vector<double> _x_trans;
+            std::vector<double> _y_trans;
+            std::vector<double> _z_trans;
+
+            void _processImage ();
+            void _printDetection();
+            void _parseData();
 
         public:
             AprilTagDetector();
@@ -65,9 +77,14 @@ namespace astro::sensor_drivers::apriltagdetector
             void setDrawOutput(bool draw);
             void setTagCode(std::string s);
             bool init();
-            int grab();
-            // Return range, bearing, elevation
-            Eigen::Vector3f getRBE();
+            void grab();
+            
+            Eigen::Vector3d getXYZ(int detectionid);
+            double getRange(int detectionid);
+            double getBearing(int detectionid);
+            double getElevation(int detectionid);
+            int getTagId (int detectionid);
+            int getNumDetection () {return _detections.size();}
 
     }  ; 
 }

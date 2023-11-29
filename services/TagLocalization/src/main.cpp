@@ -16,8 +16,20 @@ Tuan Luong
 	}
 	std::cout<<"detector initialized\n";
 	detector.setImgSize(960, 720);
+
 	while (true){
-		std::cout<<detector.grab()<<"\n";
+		detector.grab();
+		int num_detect = detector.getNumDetection();
+		std::cout << "Num detection: " << num_detect << " | ";
+		if (num_detect > 0){
+			for (int i = 0; i < num_detect; i++){
+				Eigen::Vector3d xyz = detector.getXYZ(i);
+				std::cout <<  detector.getElevation(i) << "\n";
+			}
+		}
+		else {
+			std::cout << "\n";
+		}
 		if (cv::waitKey(30) >= 0) break;
 	}
  }

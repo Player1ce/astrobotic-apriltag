@@ -92,25 +92,72 @@ bool astro::sensor_drivers::apriltagdetector::AprilTagDetector::init(){
   return true;
 }
 
-int astro::sensor_drivers::apriltagdetector::AprilTagDetector::grab(){
+void astro::sensor_drivers::apriltagdetector::AprilTagDetector::grab(){
   _videoStream >> _raw_img;
-  return _processImage();
+  _processImage();
 }
 
-int astro::sensor_drivers::apriltagdetector::AprilTagDetector::_processImage(){
+void astro::sensor_drivers::apriltagdetector::AprilTagDetector::_processImage(){
   // Convert image to grey scale
   cv::cvtColor(_raw_img, _grey_img, cv::COLOR_BGR2GRAY);
 
   // Undistort image
   cv::undistort(_grey_img, _undistort_img, _cameraMatrix, _distortionMatrix);
 
-  vector<AprilTags::TagDetection> detections = _tagDetector->extractTags(_undistort_img);
+  _detections = _tagDetector->extractTags(_undistort_img);
+
+  _parseData();
+  //for (int i = 0; i < _detections.size(); i++){
+  //  _printDetection(detections[i]);
+  //  std::cout<<"\t";
+  //}
+  //std::cout<<"\n";
 
   if (_draw){
-    for (int i = 0; i < detections.size(); i++){
-      detections[i].draw(_undistort_img);
+    for (int i = 0; i < _detections.size(); i++){
+      _detections[i].draw(_undistort_img);
     }
     imshow("Test", _undistort_img);
   }
-  return detections.size();
+}
+
+void astro::sensor_drivers::apriltagdetector::AprilTagDetector::_parseData(){
+  _x_trans.clear();
+  _y_trans.clear();
+  _z_trans.clear();
+  Eigen::Vector3d translation;
+  Eigen::Matrix3d rotation;
+    
+  for (int i = 0; i < _detections.size(); i++){
+    _detections[i].getRelativeTranslationRotation(_tagSize, _fx, _fy, _px, _py,
+                                             translation, rotation);
+    _x_trans.push_back(translation(0));
+    _y_trans.push_back(-translation(1));
+    _z_trans.push_back(translation(2));
+  }
+}
+
+int astro::sensor_drivers::apriltagdetector::AprilTagDetector::getTagId(int detectionid){
+  return _detections[detectionid].id;
+}
+
+Eigen::Vector3d astro::sensor_drivers::apriltagdetector::AprilTagDetector::getXYZ(int detectionid){
+  Eigen::Vector3d ret;
+  ret(0) = _x_trans[detectionid];
+  ret(1) = _y_trans[detectionid];
+  ret(2) = _z_trans[detectionid];
+  return ret;
+}
+
+double astro::sensor_drivers::apriltagdetector::AprilTagDetector::getRange(int detectionid){
+  return sqrt(_x_trans[detectionid] * _x_trans[detectionid] + _y_trans[detectionid] * _y_trans[detectionid] + 
+  _z_trans[detectionid] * _z_trans[detectionid]);
+}
+
+double astro::sensor_drivers::apriltagdetector::AprilTagDetector::getBearing(int detectionid){
+  return atan2 (_y_trans[detectionid], _x_trans[detectionid]);
+}
+
+double astro::sensor_drivers::apriltagdetector::AprilTagDetector::getElevation(int detectionid) {
+  return atan2 (_z_trans[detectionid], _x_trans[detectionid]);
 }
