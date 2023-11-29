@@ -52,7 +52,7 @@ namespace astro::sensor_drivers::apriltagdetector
             Eigen::Vector3f _camEuler = Eigen::Vector3f::Zero();
             Eigen::Vector3f _camPos = Eigen::Vector3f::Zero();
 
-            void _processImage ();
+            int _processImage ();
 
         public:
             AprilTagDetector();
@@ -65,9 +65,9 @@ namespace astro::sensor_drivers::apriltagdetector
             void setDrawOutput(bool draw);
             void setTagCode(std::string s);
             bool init();
-            void grab();
+            int grab();
             // Return range, bearing, elevation
-            //Eigen::Vector3f getRBE();
+            Eigen::Vector3f getRBE();
 
     }  ; 
 }

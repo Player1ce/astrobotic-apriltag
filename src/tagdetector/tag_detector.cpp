@@ -92,10 +92,25 @@ bool astro::sensor_drivers::apriltagdetector::AprilTagDetector::init(){
   return true;
 }
 
-void astro::sensor_drivers::apriltagdetector::AprilTagDetector::grab(){
-  std::cout<<"In grab()\n";
+int astro::sensor_drivers::apriltagdetector::AprilTagDetector::grab(){
+  _videoStream >> _raw_img;
+  return _processImage();
 }
 
-void astro::sensor_drivers::apriltagdetector::AprilTagDetector::_processImage(){
-  std::cout<<"In _processImage()\n";
+int astro::sensor_drivers::apriltagdetector::AprilTagDetector::_processImage(){
+  // Convert image to grey scale
+  cv::cvtColor(_raw_img, _grey_img, cv::COLOR_BGR2GRAY);
+
+  // Undistort image
+  cv::undistort(_grey_img, _undistort_img, _cameraMatrix, _distortionMatrix);
+
+  vector<AprilTags::TagDetection> detections = _tagDetector->extractTags(_undistort_img);
+
+  if (_draw){
+    for (int i = 0; i < detections.size(); i++){
+      detections[i].draw(_undistort_img);
+    }
+    imshow("Test", _undistort_img);
+  }
+  return detections.size();
 }
