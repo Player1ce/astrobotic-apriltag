@@ -15,8 +15,8 @@ Tuan Luong
 	astro::sensor_drivers::apriltagdetector::AprilTagDetector detector;
 	detector.setImgSize(1280, 720);
 	detector.setInputDev(2);
-	cv::Mat cameraMatrix = (cv::Mat1d(3, 3) << 396.3014, 0, 629.1302, 0, 396.7859, 362.4086, 0, 0, 1);
-	cv::Mat distortionMatrix = (cv::Mat1d(1, 5) << 0.0079, -0.0256, -0.0001, 0.0001, 0.004);
+	cv::Mat cameraMatrix = (cv::Mat1d(3, 3) << 396.3014, 0, 629.1302, 0, 396.7859, 362.4086, 0, 0, 1); // fx, 0, px, 0,fy, py, 0, 0, 1
+	cv::Mat distortionMatrix = (cv::Mat1d(1, 5) << 0.0079, -0.0256, -0.0001, 0.0001, 0.004); //k1, k2, p1, p2, k3 
 	detector.setCameraMatrix(cameraMatrix);
 	detector.setDistortionMatrix(distortionMatrix);
 	//detector.enableViewFinder();
