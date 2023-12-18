@@ -19,30 +19,33 @@ Tuan Luong
 	cv::Mat distortionMatrix = (cv::Mat1d(1, 5) << 0.0079, -0.0256, -0.0001, 0.0001, 0.004); //k1, k2, p1, p2, k3 
 	detector.setCameraMatrix(cameraMatrix);
 	detector.setDistortionMatrix(distortionMatrix);
-	//detector.enableViewFinder();
+	detector.enableViewFinder();
 	if (!detector.init()){
 		std::cout<<"Init fails\n";
 		return 1;
 	}
 	std::cout<<"detector initialized\n";
-
+	int l = 0;
 	while (true){
 		auto start = std::chrono::high_resolution_clock::now();
 		detector.grab();
 		int num_detect = detector.getNumDetection();
-		std::cout << "Num detection: " << num_detect << " | ";
+		//std::cout << "Num detection: " << num_detect << " | ";
 		if (num_detect > 0){
 			for (int i = 0; i < num_detect; i++){
 				Eigen::Vector3d xyz = detector.getXYZ(i);
-				std::cout <<  detector.getRange(i) * 39.37008 << "\n";
+				//std::cout <<  detector.getRange(i) * 39.37008 << "\n";
+				l++;
 			}
 		}
 		else {
-			std::cout << "\n";
+			//std::cout << "\n";
 		}
 		if (cv::waitKey(30) >= 0) break;
 		auto end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double, std::milli> ms_duration = end - start;
 		//std::cout<<ms_duration.count()<<" ms\n";
 	}
+	float p = l/200.f;
+	std::cout<<l<<"\n";
  }

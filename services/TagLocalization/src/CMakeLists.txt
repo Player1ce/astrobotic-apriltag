@@ -11,3 +11,5 @@ target_link_libraries(
 	${OpenCV_LIBS}
 )
 
+target_compile_options (TagLocalization PUBLIC -O3)
+
