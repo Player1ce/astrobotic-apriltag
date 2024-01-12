@@ -2,6 +2,9 @@
 
 default_target: all
 
+# prefix defaults to /usr/local
+PREFIX ?= /usr/local
+
 # Default to a less-verbose build.  If you want all the gory compiler output,
 # run "make VERBOSE=1"
 $(VERBOSE).SILENT:
@@ -17,6 +20,10 @@ endif
 # create the build directory if needed, and normalize its path name
 BUILD_PREFIX:=$(shell mkdir -p $(BUILD_PREFIX) && cd $(BUILD_PREFIX) && echo `pwd`)
 
+# create a variable with all the headers
+APRILTAG_HEADERS_APRILTAGS := $(shell cd AprilTags && ls *.h)
+APRILTAG_HEADERS_EXAMPLES := $(shell ls example/*.h)
+
 # Default to a release build.  If you want to enable debugging flags, run
 # "make BUILD_TYPE=Debug"
 ifeq "$(BUILD_TYPE)" ""
@@ -24,7 +31,7 @@ BUILD_TYPE="Release"
 endif
 
 all: pod-build/Makefile
-	$(MAKE) -C pod-build all install
+	$(MAKE) -C pod-build all
 
 pod-build/Makefile:
 	$(MAKE) configure
@@ -43,6 +50,13 @@ configure:
 	# run CMake to generate and configure the build scripts
 	@cd pod-build && cmake -DCMAKE_INSTALL_PREFIX=$(BUILD_PREFIX) \
 		   -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
+
+.PHONY: install
+install: pod-build/libapriltags.a
+	@chmod +x install.sh
+	@cd pod-build && ./../install.sh $(PREFIX)/lib libapriltags.a
+	@cd AprilTags && ./../install.sh $(PREFIX)/include/apriltags-cpp $(APRILTAG_HEADERS_APRILTAGS)
+	@./install.sh $(PREFIX)/include/apriltags-cpp $(APRILTAG_HEADERS_EXAMPLES)
 
 clean:
 	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi
