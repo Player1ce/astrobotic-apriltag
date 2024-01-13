@@ -55,8 +55,8 @@ configure:
 install: pod-build/libapriltags.a
 	@chmod +x install.sh
 	@cd pod-build && ./../install.sh $(PREFIX)/lib libapriltags.a
-	@cd AprilTags && ./../install.sh $(PREFIX)/include/apriltags-cpp $(APRILTAG_HEADERS_APRILTAGS)
-	@./install.sh $(PREFIX)/include/apriltags-cpp $(APRILTAG_HEADERS_EXAMPLES)
+	@cd AprilTags && ./../install.sh $(PREFIX)/include/ApriltagsCPP $(APRILTAG_HEADERS_APRILTAGS)
+	@./install.sh $(PREFIX)/include/ApriltagsCPP $(APRILTAG_HEADERS_EXAMPLES)
 
 clean:
 	-if [ -e pod-build/install_manifest.txt ]; then rm -f `cat pod-build/install_manifest.txt`; fi

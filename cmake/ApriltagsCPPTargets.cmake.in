@@ -1,0 +1,8 @@
+# Create imported target ApriltagsCPP
+add_library(ApriltagsCPP INTERFACE IMPORTED)
+
+# Set target properties
+set_target_properties(ApriltagsCPP PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${APRILTAGS_CPP_INCLUDE_DIRS}"
+  INTERFACE_LINK_LIBRARIES "${APRILTAGS_CPP_LIBRARIES}"
+)
