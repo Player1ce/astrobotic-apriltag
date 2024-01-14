@@ -2,10 +2,10 @@
 
 get_filename_component(PACKAGE_PREFIX_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
 
-set_and_check(APRILTAGS_CPP_INCLUDE_DIRS
+set(ApriltagsCPP_INCLUDE_DIRS
   "${PACKAGE_PREFIX_DIR}/include/ApriltagsCPP"
   )
 
-include("${CMAKE_CURRENT_LIST_DIR}/ApriltagsCPPTargets.cmake")
+set(ApriltagsCPP_LIBRARIES ${PACKAGE_PREFIX_DIR}/lib/libApriltagsCPP.a)
 
-set_and_check(APRILTAGS_CPP_LIBRARIES ${PACKAGE_PREFIX_DIR}/lib/libApriltagsCPP.a)
+include("${CMAKE_CURRENT_LIST_DIR}/ApriltagsCPPTargets.cmake")
