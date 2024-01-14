@@ -26,12 +26,6 @@ add_subdirectory(example)
 
 target_link_libraries(${APRILTAG_LIBRARY_NAME} ${OpenCV_LIBS} v4l2) #-pg) #-fopenmp)
 
-target_include_directories(${APRILTAG_LIBRARY_NAME}
-    INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/${APRILTAG_LIBRARY_NAME}>
-)
-
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(

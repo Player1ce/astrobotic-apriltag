@@ -7,22 +7,22 @@
 
 #include <Eigen/Dense>
 
-#include "AprilTags/Edge.h"
-#include "AprilTags/FloatImage.h"
-#include "AprilTags/Gaussian.h"
-#include "AprilTags/GrayModel.h"
-#include "AprilTags/GLine2D.h"
-#include "AprilTags/GLineSegment2D.h"
-#include "AprilTags/Gridder.h"
-#include "AprilTags/Homography33.h"
-#include "AprilTags/MathUtil.h"
-#include "AprilTags/Quad.h"
-#include "AprilTags/Segment.h"
-#include "AprilTags/TagFamily.h"
-#include "AprilTags/UnionFindSimple.h"
-#include "AprilTags/XYWeight.h"
+#include "../AprilTags/Edge.h"
+#include "../AprilTags/FloatImage.h"
+#include "../AprilTags/Gaussian.h"
+#include "../AprilTags/GrayModel.h"
+#include "../AprilTags/GLine2D.h"
+#include "../AprilTags/GLineSegment2D.h"
+#include "../AprilTags/Gridder.h"
+#include "../AprilTags/Homography33.h"
+#include "../AprilTags/MathUtil.h"
+#include "../AprilTags/Quad.h"
+#include "../AprilTags/Segment.h"
+#include "../AprilTags/TagFamily.h"
+#include "../AprilTags/UnionFindSimple.h"
+#include "../AprilTags/XYWeight.h"
 
-#include "AprilTags/TagDetector.h"
+#include "../AprilTags/TagDetector.h"
 
 //#define DEBUG_APRIL
 

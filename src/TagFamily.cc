@@ -6,19 +6,19 @@
 
 // example of instantiation of tag family:
 
-#include "AprilTags/TagFamily.h"
-#include "AprilTags/Tag36h11.h"
+#include "../AprilTags/TagFamily.h"
+#include "../AprilTags/Tag36h11.h"
 TagFamily *tag36h11 = new TagFamily(tagCodes36h11);
 
 // available tag families:
 
-#include "AprilTags/Tag16h5.h"
-#include "AprilTags/Tag16h5_other.h"
-#include "AprilTags/Tag25h7.h"
-#include "AprilTags/Tag25h9.h"
-#include "AprilTags/Tag36h11.h"
-#include "AprilTags/Tag36h11_other.h"
-#include "AprilTags/Tag36h9.h"
+#include "../AprilTags/Tag16h5.h"
+#include "../AprilTags/Tag16h5_other.h"
+#include "../AprilTags/Tag25h7.h"
+#include "../AprilTags/Tag25h9.h"
+#include "../AprilTags/Tag36h11.h"
+#include "../AprilTags/Tag36h11_other.h"
+#include "../AprilTags/Tag36h9.h"
 
 */
 

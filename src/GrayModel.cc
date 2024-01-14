@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <Eigen/LU>
 
-#include "AprilTags/GrayModel.h"
+#include "../AprilTags/GrayModel.h"
 
 namespace AprilTags {
 
