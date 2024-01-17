@@ -141,7 +141,7 @@ void astro::sensor_drivers::apriltagdetector::AprilTagDetector::_parseData(){
                                              translation, rotation);
     _x_trans.push_back(translation(0));
     _y_trans.push_back(-translation(1));
-    _z_trans.push_back(translation(2));
+    _z_trans.push_back(-translation(2));
   }
 }
 
