@@ -114,13 +114,6 @@ void astro::sensor_drivers::apriltagdetector::AprilTagDetector::_processImage(){
 
   _detections = _tagDetector->extractTags(_undistort_img);
 
-  _parseData();
-  //for (int i = 0; i < _detections.size(); i++){
-  //  _printDetection(detections[i]);
-  //  std::cout<<"\t";
-  //}
-  //std::cout<<"\n";
-
   if (_draw){
     for (int i = 0; i < _detections.size(); i++){
       _detections[i].draw(_undistort_img);
@@ -129,43 +122,47 @@ void astro::sensor_drivers::apriltagdetector::AprilTagDetector::_processImage(){
   }
 }
 
-void astro::sensor_drivers::apriltagdetector::AprilTagDetector::_parseData(){
-  _x_trans.clear();
-  _y_trans.clear();
-  _z_trans.clear();
-  Eigen::Vector3d translation;
-  Eigen::Matrix3d rotation;
-    
-  for (int i = 0; i < _detections.size(); i++){
-    _detections[i].getRelativeTranslationRotation(_tagSize, _fx, _fy, _px, _py,
-                                             translation, rotation);
-    _x_trans.push_back(translation(0));
-    _y_trans.push_back(-translation(1));
-    _z_trans.push_back(-translation(2));
-  }
-}
-
 int astro::sensor_drivers::apriltagdetector::AprilTagDetector::getTagId(int detectionid){
   return _detections[detectionid].id;
 }
 
-Eigen::Vector3d astro::sensor_drivers::apriltagdetector::AprilTagDetector::getXYZ(int detectionid){
-  Eigen::Vector3d ret;
-  ret(0) = _x_trans[detectionid];
-  ret(1) = _y_trans[detectionid];
-  ret(2) = _z_trans[detectionid];
-  return ret;
+Eigen::Matrix4d astro::sensor_drivers::apriltagdetector::AprilTagDetector::getRelTransformation(int detectionid, float tag_size) {
+  return _detections[detectionid].getRelativeTransform(tag_size, _fx, _fy, _px, _py);
 }
 
-double astro::sensor_drivers::apriltagdetector::AprilTagDetector::getRange(int detectionid){
-  return sqrt(_x_trans[detectionid] * _x_trans[detectionid] + _y_trans[detectionid] * _y_trans[detectionid] + 
-  _z_trans[detectionid] * _z_trans[detectionid]);
+void astro::sensor_drivers::apriltagdetector::AprilTagDetector::getRelCamPose (Eigen::Matrix4d & rel_T, Eigen::Matrix3d & rot_mat, Eigen::Vector3d & trans_vec){
+  Eigen::Matrix4d temp = rel_T.inverse();
+	Eigen::Matrix3d cv_frame_rot_mat = temp.block(0,0,3,3);
+
+  // Convert to NED frame
+	Eigen::Vector3d temp_vec = temp.block(0,3,3,1);
+	trans_vec(0) = temp_vec(2);
+	trans_vec(1) = -temp_vec(0);
+	trans_vec(2) = -temp_vec(1);
+
+	Eigen::Vector3d euler_ang; // In NED frame
+	euler_ang(0) = atan (rot_mat(1,0)/ rot_mat(2,2));
+	euler_ang(2) = asin (rot_mat(2,0));
+	euler_ang(1) = atan(rot_mat(2,1)/ rot_mat(2,2));
+  rot_mat = _eulertodcm(euler_ang);
 }
 
-double astro::sensor_drivers::apriltagdetector::AprilTagDetector::getBearing(int detectionid){
-  return atan2 (_y_trans[detectionid], _x_trans[detectionid]);
-}
-
-double astro::sensor_drivers::apriltagdetector::AprilTagDetector::getElevation(int detectionid) {
-  return atan2 (_z_trans[detectionid], _x_trans[detectionid]);
+Eigen::Matrix3d astro::sensor_drivers::apriltagdetector::AprilTagDetector::_eulertodcm(Eigen::Vector3d & euler) {
+  double cphi = cos (euler(0));
+  double sphi = sin (euler(0));
+  double ctheta = cos (euler(1));
+  double stheta = sin (euler(1));
+  double cpsi = cos (euler(2));
+  double spsi = sin (euler(2));
+  Eigen::Matrix3d dcm;
+  dcm (0,0) = ctheta * cpsi;
+  dcm (0,1) = ctheta * spsi;
+  dcm (0,2) = -stheta;
+  dcm (1,0) = sphi * stheta * cphi - cphi * spsi;
+  dcm (1,1) = sphi * stheta * spsi + cphi * cpsi;
+  dcm (1,2) = sphi * ctheta;
+  dcm (2,0) = cphi * stheta * cpsi + sphi * spsi;
+  dcm (2,1) = cphi * stheta * spsi - sphi * cpsi;
+  dcm (2,2) = cphi * ctheta;
+  return dcm;
 }

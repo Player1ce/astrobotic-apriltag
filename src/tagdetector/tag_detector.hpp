@@ -63,8 +63,7 @@ namespace astro::sensor_drivers::apriltagdetector
             std::vector<double> _z_trans;
 
             void _processImage ();
-            void _printDetection();
-            void _parseData();
+            Eigen::Matrix3d _eulertodcm (Eigen::Vector3d & euler);
 
         public:
             AprilTagDetector();
@@ -80,10 +79,8 @@ namespace astro::sensor_drivers::apriltagdetector
             bool init();
             void grab();
             
-            Eigen::Vector3d getXYZ(int detectionid);
-            double getRange(int detectionid);
-            double getBearing(int detectionid);
-            double getElevation(int detectionid);
+            void getRelCamPose(Eigen::Matrix4d & rel_T, Eigen::Matrix3d & rot_mat, Eigen::Vector3d & trans_vec);
+            Eigen::Matrix4d getRelTransformation(int detectionid, float tag_size);
             int getTagId (int detectionid);
             int getNumDetection () {return _detections.size();}
 
