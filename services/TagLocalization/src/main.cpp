@@ -10,8 +10,9 @@ Tuan Luong
 
 #include <chrono>
 #include <cmath>
+
 /**Test function to convert euler angles to DCM.
- 	NOTE: Tag should never have pitch euler(2) near 90 deg. Can result in gimbal lock
+ 	NOTE: Euler should never have pitch euler(2) near 90 deg. Can result in gimbal lock
 	Better way to handle this is quaternion if time permitting*/ 
 Eigen::Matrix3d euler2dcm(Eigen::Vector3d & euler) {
   double cphi = cos (euler(0));
@@ -33,13 +34,33 @@ Eigen::Matrix3d euler2dcm(Eigen::Vector3d & euler) {
   return dcm;
 }
 
+void calc_robot_pose (Eigen::Vector3d & tag_pos_world, Eigen::Vector3d & cam_pos_tag, Eigen::Vector3d & cam_pos_rob,
+						Eigen::Matrix3d & DCM_tag_world, Eigen::Matrix3d & DCM_cam_tag, Eigen::Matrix3d & DCM_robot_cam,
+						Eigen::Vector3d & rob_pos_world, Eigen::Matrix3d & DCM_rob_world) {
+	DCM_rob_world = DCM_tag_world * DCM_cam_tag * DCM_robot_cam;
+	rob_pos_world = tag_pos_world + DCM_tag_world * cam_pos_tag - DCM_rob_world * cam_pos_rob;
+}
 
- int main() {
-	// Known tag position and orientation in NED
-	Eigen::Vector3d tag_pos, tag_euler;
-	tag_pos << 0.0d, 0.0d, 0.0d;
-	tag_euler << 0.0d, 0.0d, 0.0d;
-	Eigen::Matrix3d tag_rot_mat = euler2dcm (tag_euler);
+void calc_2D_pose (Eigen::Vector3d & robot_pos_world, Eigen::Matrix3d & DCM_rob_world, Eigen::Vector3d & rob_2D_pose){
+	rob_2D_pose(0) = robot_pos_world(0);
+	rob_2D_pose(1) = robot_pos_world(1);
+	rob_2D_pose(2) = atan2(DCM_rob_world(2,1), DCM_rob_world(1,1));
+}
+
+int main() {
+	// Pose of tag in world and camera in robot frames. Constants
+	Eigen::Vector3d tag_pos_world, tag_euler_world, cam_pos_rob, cam_euler_rob;
+	tag_pos_world << 0.0d, 0.0d, 0.0d;
+	tag_euler_world << 0.0d, 0.0d, 0.0d;
+	cam_pos_rob << 0.0d, 0.0d, 0.0d;
+	cam_euler_rob << 0.0d, 0.0d, 0.0d;
+
+	// Precompute DCM between tag-world and robot-cam
+	Eigen::Matrix3d DCM_tag_world = euler2dcm(tag_euler_world); // This actually calculate DCM from tag to world which is oposite of what we need
+	DCM_tag_world.transposeInPlace(); // Tanspose DCM to get correct rotation direction
+	Eigen::Matrix3d DCM_robot_cam = euler2dcm(cam_euler_rob);
+
+
 	astro::sensor_drivers::apriltagdetector::AprilTagDetector detector;
 	detector.setImgSize(1280, 720);
 	detector.setInputDev(2);
@@ -62,13 +83,13 @@ Eigen::Matrix3d euler2dcm(Eigen::Vector3d & euler) {
 		if (num_detect > 0){
 			for (int i = 0; i < num_detect; i++){
 				Eigen::Matrix4d T_marker_cam = detector.getRelTransformation(i, 0.166f);
-				Eigen::Matrix3d rot_mat;
-				Eigen::Vector3d trans_vec;
-				detector.getRelCamPose(T_marker_cam, rot_mat, trans_vec);
+				Eigen::Matrix3d DCM_cam_tag, DCM_rob_world;
+				Eigen::Vector3d cam_pos_tag, rob_pos_world, rob_2D_pose;
+				detector.getRelCamPose(T_marker_cam, DCM_cam_tag, cam_pos_tag);
 				
-				Eigen::Vector3d test_euler;
-				//std::cout << euler_ang * 57.295f << "\n\n";
-				//std::cout <<trans_vec<< "\n\n";
+				// Calculate 3D pose and 2D pose given measurement
+				calc_robot_pose(tag_pos_world, cam_pos_tag, cam_pos_rob, DCM_tag_world, DCM_cam_tag, DCM_robot_cam, rob_pos_world, DCM_rob_world);
+				calc_2D_pose (rob_pos_world, DCM_rob_world, rob_2D_pose);
 				
 			}
 		}
