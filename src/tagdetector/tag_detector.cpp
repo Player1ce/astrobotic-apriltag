@@ -140,10 +140,20 @@ void astro::sensor_drivers::apriltagdetector::AprilTagDetector::getRelCamPose (E
 	trans_vec(1) = -temp_vec(0);
 	trans_vec(2) = -temp_vec(1);
 
+  // Test singular (gimbal locking)
+  float sy = sqrt(cv_frame_rot_mat(0,0)* cv_frame_rot_mat(0,0) + cv_frame_rot_mat(1,0)*cv_frame_rot_mat(1,0));
 	Eigen::Vector3d euler_ang; // In NED frame
-	euler_ang(0) = atan (rot_mat(1,0)/ rot_mat(2,2));
-	euler_ang(2) = asin (rot_mat(2,0));
-	euler_ang(1) = atan(rot_mat(2,1)/ rot_mat(2,2));
+  if (sy < 1e-6){
+    euler_ang(0) = -atan2 (-cv_frame_rot_mat(1,2), cv_frame_rot_mat(1,1));
+    euler_ang(2) = atan2 (-cv_frame_rot_mat(2,0), sy) + 3.1415926;
+    euler_ang(1) = 0;
+  }
+  else {
+    euler_ang(0) = -atan2 (cv_frame_rot_mat(1,0), cv_frame_rot_mat(0,0));
+    euler_ang(2) = atan2 (-cv_frame_rot_mat(2,0), sy) + 3.1415926;
+    euler_ang(1) = atan2 (cv_frame_rot_mat(2,1), cv_frame_rot_mat(2,2)) + 3.1415926;
+  }
+  
   rot_mat = _eulertodcm(euler_ang);
 }
 

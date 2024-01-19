@@ -44,11 +44,11 @@ void calc_robot_pose (Eigen::Vector3d & tag_pos_world, Eigen::Vector3d & cam_pos
 void calc_2D_pose (Eigen::Vector3d & robot_pos_world, Eigen::Matrix3d & DCM_rob_world, Eigen::Vector3d & rob_2D_pose){
 	rob_2D_pose(0) = robot_pos_world(0);
 	rob_2D_pose(1) = robot_pos_world(1);
-	rob_2D_pose(2) = atan2(DCM_rob_world(2,1), DCM_rob_world(1,1));
+	rob_2D_pose(2) = atan2(DCM_rob_world(1,0), DCM_rob_world(0,0));
 }
 
 int main() {
-	// Pose of tag in world and camera in robot frames. Constants
+	// Pose of tag in world and camera in robot frames. Constants. These can be set from config file for each camera and tag
 	Eigen::Vector3d tag_pos_world, tag_euler_world, cam_pos_rob, cam_euler_rob;
 	tag_pos_world << 0.0d, 0.0d, 0.0d;
 	tag_euler_world << 0.0d, 0.0d, 0.0d;
@@ -90,7 +90,8 @@ int main() {
 				// Calculate 3D pose and 2D pose given measurement
 				calc_robot_pose(tag_pos_world, cam_pos_tag, cam_pos_rob, DCM_tag_world, DCM_cam_tag, DCM_robot_cam, rob_pos_world, DCM_rob_world);
 				calc_2D_pose (rob_pos_world, DCM_rob_world, rob_2D_pose);
-				
+				rob_2D_pose (2) *= 57.29577;
+				std::cout << rob_2D_pose << "\n\n";
 			}
 		}
 		else {
